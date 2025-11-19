@@ -1,0 +1,231 @@
+1
+Practical No.1
+Aim: Simple Linear Regression
+import pandas as pd
+df = pd.read_csv('/content/Study.csv')
+df
+x = df.iloc[:,0].values
+x
+y = df.iloc[:,1]
+y
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=10)
+x_train.shape, x_test.shape, y_train.shape, y_test.shape
+from sklearn.linear_model import LinearRegression
+regressor = LinearRegression()
+regressor.fit(x_train.reshape(-1,1), y_train)
+regressor_pred = regressor.predict(x_test.reshape(-1,1))
+from sklearn.metrics import mean_absolute_error
+mean_absolute_error(y_test,regressor_pred)
+2
+Practical No.2
+Aim: Multiple Linear Regression
+import pandas as pd
+df=pd.read_csv('/content/Advertising.csv')
+df.head(5)
+df.info()
+df.drop('ID',axis=1,inplace=True)
+df.head(2)
+df.info()
+from sklearn.linear_model import LinearRegression
+regressor=LinearRegression()
+x=df.iloc[:,:-1]
+x.shape
+y=df.iloc[:,-1]
+y.shape
+3
+from sklearn.model_selection import train_test_split
+xtrain,xtest,ytrain,ytest=train_test_split(x,y,test_size=0.25,random_state=1)
+xtrain.shape, xtest.shape, ytrain.shape, ytest.shape
+regressor.fit(xtrain,ytrain)
+predictions=regressor.predict(xtest)
+results=pd.DataFrame({'Actual':ytest,'Predicted':predictions})
+results
+from sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score
+mean_absolute_error(ytest,predictions)
+mean_squared_error(ytest,predictions)
+r2_score(ytest,predictions)
+regressor.intercept_
+regressor.coef_
+4
+Practical No.3
+Aim: Logistic Regression
+import pandas as pd
+df=pd.read_csv('/content/pima-diabetes.csv')
+df.shape
+df.columns
+df.info()
+df['Diabetes'].unique()
+df['Diabetes'].value_counts()
+df.describe()
+5
+df.head()
+df.tail()
+df.sample(5)
+x=df.iloc[:,:-1]
+x
+y=df.iloc[:,-1]
+from sklearn.preprocessing import StandardScaler
+6
+ss=StandardScaler()
+x_scaled=ss.fit_transform(x)
+x_scaled
+from sklearn.model_selection import train_test_split
+xtrain,xtest,ytrain,ytest=train_test_split(x_scaled,y,test_size=0.25,random_state=1)
+from sklearn.linear_model import LogisticRegression
+lr=LogisticRegression()
+lr.fit(xtrain,ytrain)
+predictions=lr.predict(xtest)
+xtrain.shape,xtest.shape
+predictions
+from sklearn.metrics import accuracy_score
+accuracy_score(ytest,predictions)
+7
+Practical No.4
+Aim: Confusion Matrix
+import pandas as pd
+data ={'y_actual':[1,0,0,1,0,1,0,0,1,0,1,0],'y_pred':[1,1,0,1,0,1,1,0,1,0,0,0]}
+df= pd.DataFrame(data,columns=['y_actual','y_pred'])
+df
+confusion_matrix=pd.crosstab(df['y_actual'],df['y_pred'],rownames=['Actual'],colnames=['Pred
+cted'])
+confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
+confusion_matrix=pd.crosstab(df['y_actual'],df['y_pred'],rownames=['Actual'],colnames=['Predi
+cted'],margins=True)
+confusion_matrix
+sns.heatmap(confusion_matrix,annot=True)
+plt.show()
+8
+confusion_matrix = pd.crosstab(df['y_actual'], df['y_pred'], rownames = ['Actual'],
+colnames = ['Predicted'], margins = True)
+confusion_matrix
+9
+Practical No.5
+Aim: Feature selection using Lasso Regression.
+import pandas as pd
+df = pd.read_csv("/content/Boston_Housing.xls - Data (1).csv")
+df
+x=df.iloc[:,:-1]
+y=df.iloc[:,-1]
+from sklearn.preprocessing import StandardScaler
+sc=StandardScaler()
+x_sc=sc.fit_transform(x)
+x_sc
+from sklearn.linear_model import Lasso
+names = x.columns
+def lasso(alphas):
+df1=pd.DataFrame()
+df1['FeatureName']=names
+for alpha in alphas:
+lasso=Lasso(alpha=alpha)
+lasso.fit(x_sc,y)
+10
+column_name='Alpha=%f' %alpha
+df1[column_name]=lasso.coef_
+return df1
+lasso([0.0001,0.001,0.01,0.1,0.5,1,10,100])
+11
+Practical No.6
+Aim: Hyper parameter tunning using Ridge Regression.
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Ridge
+import matplotlib.pyplot as plt
+# Load your dataset
+df = pd.read_csv("/content/Boston_Housing.xls - Data (1).csv")
+# Split into features and target
+x = df.iloc[:, :-1]
+y = df.iloc[:, -1]
+feature_names = x.columns
+# Scale the features
+scaler = StandardScaler()
+x_scaled = scaler.fit_transform(x)
+# Ridge regression for different alpha values
+def ridge(alphas):
+ results = pd.DataFrame()
+ results['FeatureName'] = feature_names
+ for alpha in alphas:
+ ridge_model = Ridge(alpha=alpha)
+ ridge_model.fit(x_scaled, y)
+ results[f'Alpha={alpha}'] = ridge_model.coef_
+ return results
+# Run the function
+ridge_df = ridge([0.0001, 0.001, 0.01, 0.1, 1, 10, 100])
+print(ridge_df)
+12
+Practical No.7
+Aim: Decision Tree Classifier
+from sklearn.datasets import load_iris
+ds = load_iris()
+x=ds.data
+y=ds.target
+ds.feature_names
+x
+y
+ds.target_names
+from sklearn.model_selection import train_test_split
+xtrain,xtest,ytrain,ytest=train_test_split(x,y,test_size=0.2,random_state=42)
+xtrain.shape,xtest.shape,ytrain.shape,ytest.shape
+13
+from sklearn.tree import DecisionTreeClassifier
+dt=DecisionTreeClassifier()
+dt.fit(xtrain,ytrain)
+from sklearn import tree
+tree.plot_tree(dt)
+from sklearn.metrics import accuracy_score,confusion_matrix
+predictions=dt.predict(xtest)
+accuracy_score(ytest,predictions)
+confusion_matrix(ytest,predictions)
+14
+from sklearn.ensemble import RandomForestClassifier
+rf=RandomForestClassifier(n_estimators=50)
+rf.fit(xtrain,ytrain)
+predictions2=rf.predict(xtest)
+accuracy_score(ytest,predictions2)
+15
+Practical No.8
+Aim: Support Vector Machine (SVM)
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+cancer=load_breast_cancer()
+x,y=cancer.data,cancer.target
+xtrain,xtest,ytrain,ytest=train_test_split(x,y,test_size=0.2,random_state=42)
+kernels=['linear','poly','rbf']
+kernels
+best_kernel=None
+best_accuracy=0
+for kernel in kernels:
+model=SVC(kernel=kernel)
+model.fit(xtrain,ytrain)
+ypred=model.predict(xtest)
+accuracy=accuracy_score(ytest,ypred)
+print('For ',kernel,' accuracy is ',accuracy)
+if accuracy>best_accuracy:
+best_accuracy=accuracy
+best_kernel=kernel
+print('For the given problem best kernel is ',best_kernel,' with accuracy ',best_accuracy)
+16
+Practical No.9
+Aim: Implementation of binary classifier using One vs One and One vs
+Rest scheme.
+from sklearn.datasets import load_iris
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.multiclass import OneVsRestClassifier, OneVsOneClassifier
+from sklearn.metrics import accuracy_score
+iris =load_iris()
+X=iris.data
+Y=iris.target
+xtrain,xtest,ytrain,ytest=train_test_split(X,Y,test_size=0.25,random_state=42)
+ovo=OneVsOneClassifier(LogisticRegression(max_iter=200))
+ovo.fit(xtrain,ytrain)
+pred_ovo=ovo.predict(xtest)
+print("Accuracy with one versus one approach is",accuracy_score(ytest,pred_ovo))
+ovr=OneVsRestClassifier(LogisticRegression(max_iter=200))
+ovr.fit(xtrain,ytrain)
+pred_ovr=ovr.predict(xtest)
+print("Accuracy with one versus rest approach is",accuracy_score(ytest,pred_ovr))
