@@ -1,0 +1,226 @@
+Practical 05
+• Task: Research how statistical measures help in understanding
+data trends. 
+# Create a data frame
+data <- data.frame(
+ temperature = c(15, 18, 22, 25, 28, 30, 32, 35, 38),
+ ice_cream_sales = c(50, 70, 100, 120, 150, 180, 200, 220, 250)
+)
+print(data)
+OUTPUT:
+2. Measures of Central Tendency
+CODE:
+# Calculate the mean of ice cream sales
+mean_sales <- mean(data$ice_cream_sales)
+cat("Mean Ice Cream Sales:", mean_sales, "\n")
+OUTPUT:
+20
+CODE:
+# Calculate the median of ice cream sales
+median_sales <- median(data$ice_cream_sales)
+cat("Median Ice Cream Sales:", median_sales, "\n")
+OUTPUT:
+
+Practical 04
+• Task: Explain how probability helps in predictive models (e.g., spam
+detection, fraud detection)
+CODE:
+get_mode <- function(v) {
+ unique_v <- unique(v)
+ unique_v[which.max(tabulate(match(v, unique_v)))]
+}
+mode_sales <- get_mode(data$ice_cream_sales)
+cat("Mode Ice Cream Sales:", mode_sales, "\n")
+OUTPUT:
+3. Measure of Variability
+CODE:
+# Calculate the standard deviation of ice cream sales
+sd_sales <- sd(data$ice_cream_sales)
+cat("Standard Deviation of Sales:", sd_sales, "\n")
+OUTPUT:
+21
+4. Measure of Relationship (Correlation)
+CODE:
+# Calculate the correlation coefficient between temperature and sales
+correlation_coefficient <- cor(data$temperature, data$ice_cream_sales)
+cat("Correlation between Temperature and Sales:", correlation_coefficient, "\n")
+OUTPUT:
+
+CODE:
+import pandas as pd
+from collections import defaultdict
+data=[
+('I am the winner of a free prize!','spam'),
+('Please provide your bank details for reward.','spam'),
+('Hello, How are you today?','ham'),
+('Free dinner for all staff this Friday','ham'),
+('You have won a lottery prize!','spam'),
+]
+df=pd.DataFrame(data,columns=['text','label'])
+spam_words=defaultdict(int)
+ham_words=defaultdict(int)
+total_spam_emails=0
+total_ham_emails=0
+total_words_in_spam=0
+total_words_in_ham=0
+for _,row in df.iterrows():
+text=row['text'].lower().replace('.','').replace(',','').replace('!','')
+words=text.split()
+if row['label']=='spam':
+total_spam_emails+=1
+for word in words:
+spam_words[word]+=1
+14
+total_words_in_spam+=1
+else:
+total_ham_emails+=1
+for word in words:
+ham_words[word]+=1
+total_words_in_ham+=1
+total_emails=total_spam_emails+total_ham_emails
+p_spam=total_spam_emails/total_emails
+p_ham=total_ham_emails/total_emails
+def classify_email(text):
+words=text.lower().replace('.','').replace(',','').replace('!','').split()
+p_spam_given_email=p_spam
+for word in words:
+p_word_given_spam=(spam_words[word]
++1)/(total_words_in_spam+len(spam_words)+len(ham_words))
+p_spam_given_email*= p_word_given_spam
+p_ham_given_email=p_ham
+for word in words:
+if word in spam_words:
+p_word_given_ham=(ham_words[word]+1)/(total_words_in_ham+len(spam_word
+s)+len(ham_words))
+p_ham_given_email*=p_word_given_ham
+print(f"P(Spam|Email): {p_spam_given_email}")
+print(f"P(Ham|Email): {p_ham_given_email}")
+if p_spam_given_email>p_ham_given_email:
+return "Spam"
+else:
+return "Not Spam(Ham)"
+new_email=input("Enter the mail text: ")
+print(f"New email: '{new_email}'")
+result= classify_email(new_email)
+print(f"This email is classified as: {result}")
+
+
+PRACTICAL NO. 05
+*Theoretical Analysis of Statistical Measures  *
+data <- data.frame(
+ temperature = c(15, 18, 22, 25, 28, 30, 32, 35, 38),
+ ice_cream_sales = c(50, 70, 100, 120, 150, 180, 200, 220, 250)
+)
+print(data)
+OUTPUT:
+2. Measures of Central Tendency
+CODE:
+# Calculate the mean of ice cream sales
+mean_sales <- mean(data$ice_cream_sales)
+cat("Mean Ice Cream Sales:", mean_sales, "\n")
+OUTPUT:
+20
+CODE:
+# Calculate the median of ice cream sales
+median_sales <- median(data$ice_cream_sales)
+cat("Median Ice Cream Sales:", median_sales, "\n")
+OUTPUT:
+CODE:
+get_mode <- function(v) {
+ unique_v <- unique(v)
+ unique_v[which.max(tabulate(match(v, unique_v)))]
+}
+mode_sales <- get_mode(data$ice_cream_sales)
+cat("Mode Ice Cream Sales:", mode_sales, "\n")
+OUTPUT:
+3. Measure of Variability
+CODE:
+# Calculate the standard deviation of ice cream sales
+sd_sales <- sd(data$ice_cream_sales)
+cat("Standard Deviation of Sales:", sd_sales, "\n")
+OUTPUT:
+21
+4. Measure of Relationship (Correlation)
+CODE:
+# Calculate the correlation coefficient between temperature and sales
+correlation_coefficient <- cor(data$temperature, data$ice_cream_sales)
+cat("Correlation between Temperature and Sales:", correlation_coefficient, "\n")
+
+PRACTICAL NO. 07
+
+ Identify how training data bias affects fairness and suggest
+improvements. 
+
+# Install the necessary libraries
+# pip install aif360 scikit-learn pandas
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from aif360.datasets import BinaryLabelDataset
+from aif360.metrics import ClassificationMetric
+# 1. Create a Synthetic Biased Dataset
+data = {
+'Experience': [4, 6, 7, 8, 9, 10, 5, 4, 3, 2, 1, 0],
+'Gender': [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+'Hired': [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+}
+df = pd.DataFrame(data)
+# Define the protected attribute and groups
+protected_attribute = 'Gender'
+privileged_groups = [{'Gender': 1}]
+unprivileged_groups = [{'Gender': 0}]
+# 2. Train a Simple Machine Learning Model
+X = df[['Experience', 'Gender']]
+y = df['Hired']
+model = LogisticRegression()
+model.fit(X, y)
+# Get predictions
+28
+df['predictions'] = model.predict(X)
+# 3. Convert to aif360's format for fairness analysis
+# Dataset with the TRUE labels (from the original data)
+dataset_original = BinaryLabelDataset(
+df=df,
+label_names=['Hired'],
+protected_attribute_names=[protected_attribute],
+favorable_label=1,
+unfavorable_label=0
+)
+OUTPUt
+
+PRACTICAL NO. 08: Explain how these metrics determine a model’s effectiveness in
+real-world scenarios
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, precision_score, recall_score,
+f1_score, confusion_matrix
+# Create a highly imbalanced dataset
+# 720 samples of class 0 (e.g., "not fraud") and 280 of class 1 ("fraud")
+X = np.random.rand(1000, 10)
+y = np.zeros(1000)
+y[:280] = 1 # 280 positive samples
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Train a simple classifier
+model = LogisticRegression(solver='liblinear')
+model.fit(X_train, y_train)
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+# Calculate and print the metrics
+print("Model Evaluation Metrics ---")
+print(f"Accuracy: {accuracy_score(y_test, y_pred):.2f}")
+print(f"Precision: {precision_score(y_test, y_pred, zero_division=0):.2f}")
+print(f"Recall: {recall_score(y_test, y_pred, zero_division=0):.2f}")
+print(f"F1-Score: {f1_score(y_test, y_pred, zero_division=0):.2f}")
+# Print the confusion matrix
+print("\nConfusion Matrix ---")
+cm = confusion_matrix(y_test, y_pred)
+print(cm)
+# Get the components from the confusion matrix
+tn, fp, fn, tp = cm.ravel()
+32
+print(f"\nTP (True Positives): {tp}")
+print(f"FP (False Positives): {fp}")
+print(f"FN (False Negatives): {fn}")
+print(f"TN (True Negatives): {tn}")
